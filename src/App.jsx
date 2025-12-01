@@ -5,6 +5,9 @@ import LoginPage from './pages/LoginPage.jsx'
 import RecipesPage from './pages/RecipesPage.jsx'
 import RecipeViewPage from './pages/RecipeViewPage.jsx'
 import RecipeEditPage from './pages/RecipeEditPage.jsx'
+import MealPlanCreatePage from './pages/MealPlanCreatePage.jsx'
+import ShoppingListPage from './pages/ShoppingListPage.jsx'
+import GenerateShoppingListPage from './pages/GenerateShoppingListPage.jsx'
 
 function App() {
   const { auth, login, logout } = useAuth()
@@ -30,6 +33,18 @@ function App() {
         <Route 
           path="/recipes/:recipeId/edit" 
           element={<RecipeEditPage auth={auth} onLogout={logout} />} 
+        />
+        <Route
+          path="/mealplans/create"
+          element={<MealPlanCreatePage auth={auth} onLogout={logout} />}
+        />
+        <Route
+          path="/mealplans/:mealplanId/shopping-list"
+          element={<ShoppingListPage auth={auth} onLogout={logout} />}
+        />
+        <Route
+          path="/mealplans/generate"
+          element={<GenerateShoppingListPage auth={auth} onLogout={logout} />}
         />
       </Routes>
     </Router>
