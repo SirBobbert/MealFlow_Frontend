@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchRecipes } from '../../api/recipesApi.js'
 import { createMealplan } from '../../api/mealplansApi.js'
 
-function MealPlanForm({ token, onCreated }) {
+function MealPlanForm({ token, onCreated, initialRecipeId = null, initialRecipeIds = null, initialRecipeItems = null, heading = 'Create mealplan', submitLabel = 'Create mealplan' }) {
   const [name, setName] = useState('')
   const [recipes, setRecipes] = useState([])
   const [loadingRecipes, setLoadingRecipes] = useState(false)
@@ -28,6 +28,41 @@ function MealPlanForm({ token, onCreated }) {
 
     load()
   }, [token])
+
+  // If an initial recipe id is provided (from navigation state), prefill entries
+  useEffect(() => {
+    // handle a single id (backwards compat)
+    if (initialRecipeId) {
+      setEntries((prev) => {
+        if (prev.some((e) => Number(e.recipeId) === Number(initialRecipeId))) return prev
+        return [...prev, { recipeId: Number(initialRecipeId), servingsOverride: 1, mealType: 'DINNER' }]
+      })
+    }
+
+    // handle multiple initial ids (draft -> create flow)
+    if (Array.isArray(initialRecipeIds) && initialRecipeIds.length > 0) {
+      setEntries((prev) => {
+        const existing = new Set(prev.map((e) => Number(e.recipeId)))
+        const newOnes = initialRecipeIds
+          .map((id) => Number(id))
+          .filter((n) => !existing.has(n))
+          .map((n) => ({ recipeId: n, servingsOverride: 1, mealType: 'DINNER' }))
+        return [...prev, ...newOnes]
+      })
+    }
+
+    // handle initialRecipeItems (array of { id, mealType, servings, dayOfWeek })
+    if (Array.isArray(initialRecipeItems) && initialRecipeItems.length > 0) {
+      setEntries((prev) => {
+        const existing = new Set(prev.map((e) => Number(e.recipeId)))
+        const newOnes = initialRecipeItems
+          .map((it) => ({ recipeId: Number(it.id), servingsOverride: Number(it.servings) || 1, mealType: it.mealType || 'DINNER', dayOfWeek: it.dayOfWeek || null }))
+          .filter((n) => !existing.has(n.recipeId))
+        return [...prev, ...newOnes]
+      })
+    }
+  // we intentionally only want to run this when the incoming ids change
+  }, [initialRecipeId, JSON.stringify(initialRecipeIds)])
 
   function addRecipe(recipeId) {
     setEntries((prev) => [
@@ -56,6 +91,7 @@ function MealPlanForm({ token, onCreated }) {
         recipeId: Number(e.recipeId),
         servingsOverride: Number(e.servingsOverride) || 1,
         mealType: e.mealType || 'DINNER',
+        dayOfWeek: e.dayOfWeek || null,
       })),
     }
 
@@ -74,7 +110,7 @@ function MealPlanForm({ token, onCreated }) {
 
   return (
     <section className="card">
-      <h2>Create mealplan</h2>
+      <h2>{heading}</h2>
       {error && <p className="error">{error}</p>}
       {listError && <p className="error">{listError}</p>}
 
@@ -153,7 +189,7 @@ function MealPlanForm({ token, onCreated }) {
 
         <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
           <button className="btn primary" type="submit" disabled={submitting}>
-            {submitting ? 'Creating...' : 'Create mealplan'}
+            {submitting ? 'Creating...' : submitLabel}
           </button>
         </div>
       </form>

@@ -1,9 +1,9 @@
 // src/pages/RecipeViewPage.jsx
 import { useEffect, useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
-import Header from '../components/layout/Header.jsx'
-import RecipeDetails from '../components/recipes/RecipeDetails.jsx'
+import { useNavigationHistory } from '../hooks/useNavigationHistory.js'
 import Notification from '../components/layout/Notification.jsx'
+import RecipeDetails from '../components/recipes/RecipeDetails.jsx'
 import { fetchRecipeById } from '../api/recipesApi.js'
 
 function RecipeViewPage({ auth, onLogout }) {
@@ -13,6 +13,7 @@ function RecipeViewPage({ auth, onLogout }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [notification, setNotification] = useState(null)
+  const { goBack } = useNavigationHistory()
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -43,46 +44,44 @@ function RecipeViewPage({ auth, onLogout }) {
   }, [recipeId, auth.token, location.state])
 
   return (
-    <div className="app-shell">
-      <Header auth={auth} onLogout={onLogout} />
+    <>
       <Notification 
         message={notification?.message}
         type={notification?.type}
         onClose={() => setNotification(null)}
       />
 
-      <main className="app-main">
-        <div className="recipe-view-navigation">
-          <Link to="/recipes" className="btn">
-            ← Back to Recipes
+      <div className="recipe-view-navigation">
+        <button type="button" onClick={() => goBack()} className="btn" style={{ border: '1px solid #4b5563' }}>
+          ← Back
+        </button>
+        {recipe && (
+          <Link 
+            to={`/recipes/${recipeId}/edit`} 
+            className="btn"
+            style={{ border: '1px solid #4b5563' }}
+          >
+            Edit Recipe
           </Link>
-          {recipe && (
-            <Link 
-              to={`/recipes/${recipeId}/edit`} 
-              className="btn primary"
-            >
-              Edit Recipe
-            </Link>
-          )}
-        </div>
-
-        {loading && (
-          <section className="card">
-            <p>Loading recipe...</p>
-          </section>
         )}
+      </div>
 
-        {error && (
-          <section className="card">
-            <p className="error">{error}</p>
-          </section>
-        )}
+      {loading && (
+        <section className="card">
+          <p>Loading recipe...</p>
+        </section>
+      )}
 
-        {!loading && !error && recipe && (
-          <RecipeDetails recipe={recipe} token={auth.token} />
-        )}
-      </main>
-    </div>
+      {error && (
+        <section className="card">
+          <p className="error">{error}</p>
+        </section>
+      )}
+
+      {!loading && !error && recipe && (
+        <RecipeDetails recipe={recipe} token={auth.token} />
+      )}
+    </>
   )
 }
 

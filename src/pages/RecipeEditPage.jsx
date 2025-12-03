@@ -1,14 +1,15 @@
 // src/pages/RecipeEditPage.jsx
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import Header from '../components/layout/Header.jsx'
-import RecipeForm from '../components/recipes/RecipeForm.jsx'
+import { useNavigationHistory } from '../hooks/useNavigationHistory.js'
 import Notification from '../components/layout/Notification.jsx'
+import RecipeForm from '../components/recipes/RecipeForm.jsx'
 import { updateRecipe, fetchRecipeById } from '../api/recipesApi.js'
 
 function RecipeEditPage({ auth, onLogout }) {
   const { recipeId } = useParams()
   const navigate = useNavigate()
+  const { goBack } = useNavigationHistory()
   const [recipe, setRecipe] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -66,45 +67,42 @@ function RecipeEditPage({ auth, onLogout }) {
   }
 
   return (
-    <div className="app-shell">
-      <Header auth={auth} onLogout={onLogout} />
+    <>
       <Notification 
         message={notification?.message}
         type={notification?.type}
         onClose={() => setNotification(null)}
       />
 
-      <main className="app-main">
-        <div className="recipe-view-navigation">
-          <Link to={`/recipes/${recipeId}`} className="btn">
-            ← Back to Recipe
-          </Link>
-        </div>
+      <div className="recipe-view-navigation">
+        <button type="button" onClick={() => goBack()} className="btn" style={{ border: '1px solid #4b5563' }}>
+          ← Back
+        </button>
+      </div>
 
-        {loading && (
-          <section className="card">
-            <p>Loading recipe...</p>
-          </section>
-        )}
+      {loading && (
+        <section className="card">
+          <p>Loading recipe...</p>
+        </section>
+      )}
 
-        {error && (
-          <section className="card">
-            <p className="error">{error}</p>
-          </section>
-        )}
+      {error && (
+        <section className="card">
+          <p className="error">{error}</p>
+        </section>
+      )}
 
-        {!loading && !error && recipe && (
-          <RecipeForm
-            token={auth.token}
-            editingRecipe={recipe}
-            onUpdate={handleUpdate}
-            onCancelEdit={handleCancel}
-            loading={updating}
-            error={updateError}
-          />
-        )}
-      </main>
-    </div>
+      {!loading && !error && recipe && (
+        <RecipeForm
+          token={auth.token}
+          editingRecipe={recipe}
+          onUpdate={handleUpdate}
+          onCancelEdit={handleCancel}
+          loading={updating}
+          error={updateError}
+        />
+      )}
+    </>
   )
 }
 

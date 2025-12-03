@@ -14,11 +14,11 @@ function Header({ user, onLogout }) {
               <Link to="/recipes" className="btn" style={{ border: '1px solid #4b5563' }}>
                 Recipes
               </Link>
-              <Link to="/mealplans/create" className="btn" style={{ border: '1px solid #4b5563' }}>
-                Create mealplan
+              <Link to="/mealplans" className="btn" style={{ border: '1px solid #4b5563' }}>
+                View mealplans
               </Link>
-              <Link to="/mealplans/generate" className="btn" style={{ border: '1px solid #4b5563' }}>
-                Generate shopping list
+              <Link to="/mealplans/draft" className="btn" style={{ border: '1px solid #4b5563' }}>
+                Draft mealplan
               </Link>
             </nav>
           </div>

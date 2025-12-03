@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import LoginForm from '../components/auth/LoginForm.jsx'
-import Header from '../components/layout/Header.jsx'
 import { loginRequest } from '../api/authApi.js'
 
 function LoginPage({ onLoginSuccess }) {
@@ -24,16 +23,13 @@ function LoginPage({ onLoginSuccess }) {
   }
 
   return (
-    <div className="app-shell">
-      <Header user={null} onLogout={null} />
-      <main className="app-main">
-        <LoginForm
-          onSubmit={handleLogin}
-          loading={loading}
-          error={error}
-        />
-      </main>
-    </div>
+    <main className="app-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <LoginForm
+        onSubmit={handleLogin}
+        loading={loading}
+        error={error}
+      />
+    </main>
   )
 }
 

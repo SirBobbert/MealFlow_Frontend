@@ -7,6 +7,8 @@ function RecipeList({
   error,
   onDelete,
   deletingId,
+  onAddToMealplan,
+  showCreatePrompt,
 }) {
   const [confirmingDeleteId, setConfirmingDeleteId] = useState(null)
   if (loading) {
@@ -25,9 +27,23 @@ function RecipeList({
       {error && <p className="error">{error}</p>}
 
       {!error && recipes.length === 0 && (
-        <p className="muted">
-          No recipes yet. Create your first one.
-        </p>
+        <div style={{
+          padding: '1.5rem',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderRadius: '8px',
+          borderLeft: '4px solid #3b82f6',
+          textAlign: 'center'
+        }}>
+          <p className="muted" style={{ margin: '0 0 0.75rem 0' }}>
+            No recipes {showCreatePrompt ? 'matching your search' : 'yet'}.{' '}
+            {showCreatePrompt ? 'Why not create one?' : 'Create your first one.'}
+          </p>
+          {showCreatePrompt && (
+            <Link to="/recipes/create" className="btn primary" style={{ border: '1px solid #4b5563' }}>
+              Create recipe
+            </Link>
+          )}
+        </div>
       )}
 
       <ul className="recipe-list">
@@ -77,6 +93,14 @@ function RecipeList({
                   >
                     Edit
                   </Link>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => typeof onAddToMealplan === 'function' && onAddToMealplan(r.id)}
+                    style={{ border: '1px solid #4b5563' }}
+                  >
+                    Add to mealplan
+                  </button>
                   {onDelete && (
                     confirmingDeleteId === r.id ? (
                       <div style={{ display: 'flex', gap: '0.3rem' }}>
