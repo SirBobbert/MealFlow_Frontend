@@ -49,6 +49,7 @@ function MealPlanViewPage({ auth }) {
 
       <section className="card">
         <h2>Mealplan {mealplan?.name || mealplanId}</h2>
+        
 
         <div style={{ marginBottom: '0.75rem' }}>
           <button type="button" onClick={() => goBack()} className="btn" style={{ border: '1px solid #4b5563' }}>
